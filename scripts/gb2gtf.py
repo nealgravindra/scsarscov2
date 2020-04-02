@@ -9,7 +9,7 @@ Neal G. Ravindra, 200402
 import os
 from Bio import SeqIO
 
-def gb2gtf(fname,included_types=['CDS','mat_peptide']):
+def gb2gtf(fname,included_types=['CDS'],outfile=None):
     """Download complete GeneBank record to get gb file and feed it here.
 
     NOTE: not sure about \n carriage in gtf line
@@ -26,7 +26,8 @@ def gb2gtf(fname,included_types=['CDS','mat_peptide']):
       https://useast.ensembl.org/info/website/upload/gff.html
     """
     print('Converting {} to .gtf'.format(os.path.split(fname)[1]))
-    outfile = fname.split('.gb')[0]+'.gtf'
+    if outfile is None:
+        outfile = fname.split('.gb')[0]+'.gtf'
     with open(outfile,'a') as out:
         for gb in SeqIO.parse(fname,'gb'):
             for f in gb.features:
@@ -39,7 +40,7 @@ def gb2gtf(fname,included_types=['CDS','mat_peptide']):
                 elif f.type not in included_types:
                     continue # skip gene type because it seems to get duplicated
                 else:
-                    if f.type=='CDS':
+                    if (f.type=='CDS') or (f.type=='mat_peptide'):
                         feature = 'exon' # treat CDS as exons, though exons technically contain UTRs, CDS does not
                     else:
                         feature = f.type
@@ -99,5 +100,7 @@ if __name__ == '__main__' :
     ## KC894166.1      genebank        exon    592     7065    .       +       .       gene_id "HRV-1A_P1"; transcript_id "HRV-1A_P1"; gene_name "HRV-1A_P1";
     sc2 = '/home/ngr/ushare/sccovid/data/processed/MT020880.1.gb'
     rhv = '/home/ngr/ushare/sccovid/data/processed/HRV-1A_P1.gb'
+    rhv_subreads = '/home/ngr/ushare/sccovid/data/processed/HRV-1A_P1_mat_peptide.gtf'
     gb2gtf(sc2)
     gb2gtf(rhv)
+    gb2gtf(rhv,included_types=['mat_peptide'],outfile=rhv_subreads)
