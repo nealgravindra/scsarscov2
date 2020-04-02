@@ -1,3 +1,11 @@
+'''
+Download complete record from GeneBank in .gb format. Also download fasta. Run
+this script to get gtf, and with fasta, run cellranger mkref.
+
+Neal G. Ravindra, 200402
+'''
+
+
 import os
 from Bio import SeqIO
 
